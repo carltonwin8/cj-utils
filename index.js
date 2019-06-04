@@ -7,9 +7,9 @@ const processPhotos = require("./process-photos");
 const findInFiles = require("./find-in-files");
 
 const tools = [
+  { name: "Find in Files", cmd: findInFiles },
   { name: "GUI", cmd: startGui },
-  { name: "Process Photos", cmd: processPhotos },
-  { name: "Find in Files", cmd: findInFiles }
+  { name: "Process Photos", cmd: processPhotos }
 ];
 
 const inq = inquirer
