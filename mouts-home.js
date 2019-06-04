@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-let inquirer = require("inquirer");
+var inquirer = require("inquirer");
 
-const msg = "start the gui";
+const msg = "mounts";
 
 if (require.main === module) exe();
 
