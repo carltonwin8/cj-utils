@@ -1,0 +1,16 @@
+{
+  "name": "cj-utils",
+  "version": "1.0.0",
+  "description": "Carlton's Utilities",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Carlton Joseph",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^6.3.1"
+  }
+}
