@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/carltonwin8/cj-utils/issues"
   },
-  "homepage": "https://github.com/carltonwin8/cj-utils#readme"
+  "homepage": "https://github.com/carltonwin8/cj-utils#readme",
+  "devDependencies": {
+    "progress": "^2.0.3"
+  }
 }

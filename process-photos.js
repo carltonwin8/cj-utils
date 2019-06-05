@@ -3,6 +3,7 @@ let inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 const { execSync, exec } = require("child_process");
+const progress = require("progress");
 
 const actions = [
   { name: "Process Photos", cmd: processPhotos },
@@ -24,7 +25,7 @@ if (require.main === module) {
         .filter(action => action.name === answers.action)[0]
         .cmd({ inquirer })
     )
-    .catch(e => console.log("Photo processing failed with: ", e.message));
+    .catch(e => console.error("Photo processing failed with: ", e.message));
 }
 
 module.exports = ({ inquirer: iIn, getFunctions }) => {
@@ -35,8 +36,9 @@ module.exports = ({ inquirer: iIn, getFunctions }) => {
     };
 
   if (iIn) inquirer = iIn;
-  console.log(msg, "as a module");
+  return processPhotos();
 };
+
 const dcraw =
   process.platform === "darwin" ? "/usr/local/bin/dcraw" : "/usr/bin/dcraw";
 
@@ -45,20 +47,30 @@ const convert =
     ? "/usr/local/bin/convert"
     : "/usr/local/bin/convert";
 
-let raw = 0;
-const extractRaw = value => (raw = value);
-let msg = 0;
-const convertMsg = value => (msg = value);
 let totalv = 0;
-const total = value => (totalv = value);
+function total(value) {
+  totalv = value;
+}
 let totaljpegv = 0;
-const totaljpeg = value => (totaljpegv = value);
+function totaljpeg(value) {
+  totaljpegv = value;
+}
+let raw = 0;
+function extractRaw(value, bar) {
+  bar && bar.tick();
+}
+let msg = 0;
+function convertMsg(value, bar) {
+  bar && bar.tick();
+}
 let jpegv = 0;
-const jpeg = value => (jpegv = value);
+function jpeg(value, bar) {
+  bar && bar.tick();
+}
 
 function resetPhotoDir() {
-  console.log("reset photos");
   reset(process.cwd(), total, extractRaw, convertMsg, totaljpeg, jpeg);
+  console.log("Photos Reset");
 }
 
 async function processPhotos() {
@@ -73,7 +85,16 @@ async function processPhotos() {
     return await Promise.reject(`no raw/jpg files found in => ${cwd}`);
   total(rawFiles.length);
   totaljpeg(jpgFiles.length);
-  develope(cwd, "1620x1080", extractRaw, convertMsg, jpeg, rawFiles, jpgFiles);
+  const bar = new progress(":bar", { total: totalv * 2 + totaljpegv });
+  return await develope(
+    cwd,
+    "1620x1080",
+    val => extractRaw(val, bar),
+    val => convertMsg(val, bar),
+    val => jpeg(val, bar),
+    rawFiles,
+    jpgFiles
+  );
 }
 
 function develope(cwd, size, extractRaw, convertMsg, jpeg, rawFiles, jpgFiles) {
@@ -97,7 +118,7 @@ function develope(cwd, size, extractRaw, convertMsg, jpeg, rawFiles, jpgFiles) {
         })
     )
     .catch(e =>
-      console.log("Process photos failed making directories with:", e.message)
+      console.error("Process photos failed making directories with:", e.message)
     );
   // handle raw files
   p = p.then(() => {
@@ -167,6 +188,6 @@ function reset(cwd, total, extractRaw, convertMsg, totaljpeg, jpeg) {
     totaljpeg(0);
     jpeg(0);
   } else {
-    console.log(`Failed! Missing ${cwd}ori.`);
+    console.error(`Failed! Missing ${cwd}ori.`);
   }
 }
