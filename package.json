@@ -1,6 +1,6 @@
 {
   "name": "cj-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Carlton's Utilities",
   "main": "index.js",
   "bin": "index.js",
